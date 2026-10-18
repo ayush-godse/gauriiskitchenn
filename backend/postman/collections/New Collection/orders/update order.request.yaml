@@ -1,0 +1,18 @@
+$kind: http-request
+description: "Generated from cURL: curl.exe --location --request PUT
+  \"http://localhost:5000/api/orders/YOUR_ORDER_ID/status\" `\r
+
+  \  --header \"Authorization: Bearer YOUR_ADMIN_JWT_TOKEN\" `\r
+
+  \  --header \"Content-Type: application/json\" `\r
+
+  \  --data-raw '{\"status\":\"Completed\"}'"
+url: http://localhost:5000/api/orders/YOUR_ORDER_ID/status
+method: PUT
+headers:
+  Authorization: Bearer YOUR_ADMIN_JWT_TOKEN
+  Content-Type: application/json
+body:
+  type: json
+  content: '{"status":"Completed"}'
+order: 5000

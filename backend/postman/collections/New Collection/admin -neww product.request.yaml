@@ -1,0 +1,36 @@
+$kind: http-request
+description: |-
+  Generated from cURL: curl --location 'http://localhost:5000/api/products' \
+    --header 'Authorization: Bearer YOUR_ADMIN_TOKEN' \
+    --form 'name=Chakli' \
+    --form 'description=Crispy homemade chakli' \
+    --form 'price=250' \
+    --form 'category=Snacks' \
+    --form 'stock=20' \
+    --form 'image=@C:/path/to/chakli.jpg'
+url: http://localhost:5000/api/products
+method: POST
+headers:
+  Authorization: Bearer YOUR_ADMIN_TOKEN
+body:
+  type: formdata
+  content:
+    - type: text
+      key: name
+      value: Chakli
+    - type: text
+      key: description
+      value: Crispy homemade chakli
+    - type: text
+      key: price
+      value: "250"
+    - type: text
+      key: category
+      value: Snacks
+    - type: text
+      key: stock
+      value: "20"
+    - type: file
+      key: image
+      src: C:/path/to/chakli.jpg
+order: 2156714413022179

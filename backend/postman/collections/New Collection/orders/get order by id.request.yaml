@@ -1,0 +1,78 @@
+$kind: http-request
+description: "Generated from cURL: curl.exe --location
+  \"http://localhost:5000/api/orders\" `\r
+
+  \  --header \"Authorization: Bearer YOUR_JWT_TOKEN\" `\r
+
+  \  --header \"Content-Type: application/json\" `\r
+
+  \  --data-raw '{\r
+
+  \    \"products\": [\r
+
+  \      {\r
+
+  \        \"product\": \"YOUR_PRODUCT_MONGODB_ID\",\r
+
+  \        \"quantity\": 2,\r
+
+  \        \"price\": 150\r
+
+  \      }\r
+
+  \    ],\r
+
+  \    \"totalAmount\": 300,\r
+
+  \    \"address\": {\r
+
+  \      \"FullName\": \"Ayush Godse\",\r
+
+  \      \"Street\": \"123 Main Street\",\r
+
+  \      \"phone\": \"9876543210\"\r
+
+  \    },\r
+
+  \    \"paymentId\": \"YOUR_PAYMENT_ID\"\r
+
+  \  }'"
+url: http://localhost:5000/api/orders
+method: POST
+headers:
+  Authorization: Bearer YOUR_JWT_TOKEN
+  Content-Type: application/json
+body:
+  type: json
+  content: "{\r
+
+    \    \"products\": [\r
+
+    \      {\r
+
+    \        \"product\": \"YOUR_PRODUCT_MONGODB_ID\",\r
+
+    \        \"quantity\": 2,\r
+
+    \        \"price\": 150\r
+
+    \      }\r
+
+    \    ],\r
+
+    \    \"totalAmount\": 300,\r
+
+    \    \"address\": {\r
+
+    \      \"FullName\": \"Ayush Godse\",\r
+
+    \      \"Street\": \"123 Main Street\",\r
+
+    \      \"phone\": \"9876543210\"\r
+
+    \    },\r
+
+    \    \"paymentId\": \"YOUR_PAYMENT_ID\"\r
+
+    \  }"
+order: 1000

@@ -1,0 +1,44 @@
+$kind: http-request
+description: "Generated from cURL: curl --location
+  'http://localhost:5000/api/products' \\\r
+
+  \  --header 'Authorization: Bearer YOUR_ADMIN_TOKEN' \\\r
+
+  \  --form 'name=Besan Ladoo' \\\r
+
+  \  --form 'description=Homemade ladoos made with roasted gram flour and ghee'
+  \\\r
+
+  \  --form 'price=280' \\\r
+
+  \  --form 'category=Sweets' \\\r
+
+  \  --form 'stock=25' \\\r
+
+  \  --form 'image=@C:/path/to/besan-ladoo.jpg'"
+url: http://localhost:5000/api/products
+method: POST
+headers:
+  Authorization: Bearer YOUR_ADMIN_TOKEN
+body:
+  type: formdata
+  content:
+    - type: text
+      key: name
+      value: Besan Ladoo
+    - type: text
+      key: description
+      value: Homemade ladoos made with roasted gram flour and ghee
+    - type: text
+      key: price
+      value: "280"
+    - type: text
+      key: category
+      value: Sweets
+    - type: text
+      key: stock
+      value: "25"
+    - type: file
+      key: image
+      src: C:/path/to/besan-ladoo.jpg
+order: 6000

@@ -1,0 +1,36 @@
+$kind: http-request
+description: |-
+  Generated from cURL: curl --location 'http://localhost:5000/api/products' \
+    --header 'Authorization: Bearer YOUR_ADMIN_TOKEN' \
+    --form 'name=Karanji' \
+    --form 'description=Traditional coconut-filled sweet' \
+    --form 'price=300' \
+    --form 'category=Sweets' \
+    --form 'stock=15' \
+    --form 'image=@C:/path/to/karanji.jpg'
+url: http://localhost:5000/api/products
+method: POST
+headers:
+  Authorization: Bearer YOUR_ADMIN_TOKEN
+body:
+  type: formdata
+  content:
+    - type: text
+      key: name
+      value: Karanji
+    - type: text
+      key: description
+      value: Traditional coconut-filled sweet
+    - type: text
+      key: price
+      value: "300"
+    - type: text
+      key: category
+      value: Sweets
+    - type: text
+      key: stock
+      value: "15"
+    - type: file
+      key: image
+      src: C:/path/to/karanji.jpg
+order: 7000
