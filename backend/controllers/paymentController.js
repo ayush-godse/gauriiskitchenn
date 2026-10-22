@@ -26,9 +26,10 @@ const getCartDetails = async (items) => {
     throw error;
   }
 
-  const normalizedItems = items.map(({ product, quantity }) => ({
+  const normalizedItems = items.map(({ product, quantity, sizeGrams }) => ({
     product: String(product || ""),
     quantity: Number(quantity),
+    sizeGrams: Number(sizeGrams),
   }));
   if (
     normalizedItems.some(({ product, quantity }) =>
@@ -36,7 +37,8 @@ const getCartDetails = async (items) => {
       !Number.isInteger(quantity) ||
       quantity < 1
     ) ||
-    new Set(normalizedItems.map(({ product }) => product)).size !== normalizedItems.length
+    normalizedItems.some(({ sizeGrams }) => ![500, 1000].includes(sizeGrams)) ||
+    new Set(normalizedItems.map(({ product, sizeGrams }) => `${product}:${sizeGrams}`)).size !== normalizedItems.length
   ) {
     const error = new Error("Cart items are invalid.");
     error.status = 400;
@@ -47,28 +49,46 @@ const getCartDetails = async (items) => {
     _id: { $in: normalizedItems.map(({ product }) => product) },
   });
   const productById = new Map(products.map((product) => [String(product._id), product]));
-  if (products.length !== normalizedItems.length) {
+  const uniqueProductIds = new Set(normalizedItems.map(({ product }) => product));
+  if (products.length !== uniqueProductIds.size) {
     const error = new Error("One or more products are no longer available.");
     error.status = 400;
     throw error;
   }
 
-  const orderProducts = normalizedItems.map(({ product, quantity }) => {
-    const productData = productById.get(product);
-    if (!productData || quantity > productData.stock) {
-      const error = new Error(`${productData?.name || "A product"} does not have enough stock.`);
+  const stockRequiredByProduct = new Map();
+  normalizedItems.forEach(({ product, quantity, sizeGrams }) => {
+    stockRequiredByProduct.set(
+      product,
+      (stockRequiredByProduct.get(product) || 0) + quantity * sizeGrams
+    );
+  });
+  for (const [productId, requiredStockGrams] of stockRequiredByProduct) {
+    const productData = productById.get(productId);
+    if (requiredStockGrams > productData.stock) {
+      const error = new Error(`${productData.name} does not have enough stock.`);
       error.status = 400;
       throw error;
     }
+  }
+
+  const orderProducts = normalizedItems.map(({ product, quantity, sizeGrams }) => {
+    const productData = productById.get(product);
     return {
       product: productData._id,
       quantity,
-      price: productData.price,
+      sizeGrams,
+      price: productData.price * (sizeGrams / 500),
     };
   });
-  const receiptItems = normalizedItems.map(({ product, quantity }) => {
+  const receiptItems = normalizedItems.map(({ product, quantity, sizeGrams }) => {
     const productData = productById.get(product);
-    return { name: productData.name, quantity, price: productData.price };
+    return {
+      name: productData.name,
+      quantity,
+      sizeGrams,
+      price: productData.price * (sizeGrams / 500),
+    };
   });
   const totalAmount = orderProducts.reduce(
     (total, item) => total + item.price * item.quantity,
@@ -82,7 +102,7 @@ const getCartDetails = async (items) => {
   }
 
   const canonicalItems = normalizedItems
-    .sort((a, b) => a.product.localeCompare(b.product));
+    .sort((a, b) => a.product.localeCompare(b.product) || a.sizeGrams - b.sizeGrams);
   const cartHash = crypto.createHash("sha256")
     .update(JSON.stringify(canonicalItems))
     .digest("hex");
@@ -110,8 +130,8 @@ const reserveStock = async (orderProducts) => {
   try {
     for (const item of orderProducts) {
       const product = await Product.findOneAndUpdate(
-        { _id: item.product, stock: { $gte: item.quantity } },
-        { $inc: { stock: -item.quantity } },
+        { _id: item.product, stock: { $gte: item.quantity * item.sizeGrams } },
+        { $inc: { stock: -(item.quantity * item.sizeGrams) } },
         { new: true }
       );
       if (!product) {
@@ -119,7 +139,7 @@ const reserveStock = async (orderProducts) => {
         error.status = 409;
         throw error;
       }
-      reserved.push({ productId: product._id, quantity: item.quantity });
+      reserved.push({ productId: product._id, quantity: item.quantity * item.sizeGrams });
     }
     return reserved;
   } catch (error) {
@@ -190,8 +210,18 @@ const verifyPayment = async (req, res) => {
     ) {
       return res.status(400).json({ message: "Payment does not match this account and cart." });
     }
-    if (!req.body.address?.FullName || !req.body.address?.Street || !/^[0-9]{10}$/.test(req.body.address?.phone || "")) {
-      return res.status(400).json({ message: "Enter your full name, street address, and a valid 10-digit phone number." });
+    if (payment.status === "authorized") {
+      const capturedPayment = await client.payments.capture(
+        razorpay_payment_id,
+        amountInPaise,
+        "INR"
+      );
+      if (capturedPayment.status !== "captured") {
+        return res.status(409).json({ message: "Payment has not been captured." });
+      }
+    }
+    if (!req.body.address?.FullName || !req.body.address?.Street || !req.body.address?.City || !/^[0-9]{10}$/.test(req.body.address?.phone || "")) {
+      return res.status(400).json({ message: "Enter your full name, street address, city, and a valid 10-digit phone number." });
     }
 
     const existingOrder = await Order.findOne({ paymentId: razorpay_payment_id });

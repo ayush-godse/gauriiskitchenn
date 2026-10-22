@@ -89,7 +89,7 @@ const Profile = () => {
                             <ul>
                                 {(order.products || []).map((item, index) => (
                                     <li key={item._id || `${item.product?._id || item.product}-${index}`}>
-                                        <span>{item.product?.name || "Product"} × {item.quantity}</span>
+                                        <span>{item.product?.name || "Product"} ({item.sizeGrams === 1000 ? "1 kg" : "500 g"}) × {item.quantity}</span>
                                         <span>₹{(Number(item.price || 0) * Number(item.quantity || 0)).toFixed(2)}</span>
                                     </li>
                                 ))}
@@ -97,7 +97,7 @@ const Profile = () => {
                             <div className="order-history-details">
                                 <p><strong>Total:</strong> ₹{Number(order.totalAmount || 0).toFixed(2)}</p>
                                 <p><strong>Payment:</strong> {order.paymentStatus || (order.paymentId ? "Paid" : "Unpaid")}</p>
-                                <p><strong>Delivering to:</strong> {order.address?.FullName}, {order.address?.Street} · {order.address?.phone}</p>
+                                <p><strong>Delivering to:</strong> {order.address?.FullName}, {order.address?.Street}{order.address?.City ? `, ${order.address.City}` : ''} · {order.address?.phone}</p>
                                 <p><strong>Estimated delivery:</strong> {formatDate(getEstimatedDelivery(order))}</p>
                             </div>
                         </article>

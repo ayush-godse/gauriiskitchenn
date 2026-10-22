@@ -83,8 +83,8 @@ const AdminProducts = () => {
                             <ProductImage product={product} className="admin-product-image" />
                             <div className="admin-product-info">
                                 <h2>{product.name}</h2>
-                                <p>{product.category} · ₹{Number(product.price).toFixed(2)}</p>
-                                <p>Stock: {product.stock}</p>
+                                <p>{product.category} · ₹{Number(product.price).toFixed(2)} / 500 g</p>
+                                <p>Stock: {product.stock} g</p>
                             </div>
                             <div className="admin-product-actions">
                                 <Link to={`/admin/products/${product._id}/edit`} className="admin-product-edit">

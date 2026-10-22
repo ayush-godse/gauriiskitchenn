@@ -1,36 +1,5 @@
 const Order = require("../model/order.js");
 const sendEmail = require("../utils/sendEmail.js");
-const sendOrderReceipt = require("../utils/sendOrderReceipt.js");
-
-// Create a new order
-const createOrder = async (req, res) => {
-  try {
-    const { user, products, totalAmount, address, paymentId } = req.body;
-    const order = new Order({
-      user: req.user._id,
-      products,
-      totalAmount,
-      address: req.body.address,
-      paymentId: req.body.paymentId
-    });
-    await order.save();
-    await order.populate("products.product");
-    try {
-      await sendOrderReceipt(order, req.user, order.products.map((item) => ({
-        name: item.product.name,
-        quantity: item.quantity,
-        price: item.price,
-      })));
-      order.receiptEmailSentAt = new Date();
-      await order.save();
-    } catch (emailError) {
-      console.error("Order receipt email failed:", emailError.code || "EMAIL_ERROR");
-    }
-    res.status(201).json(order);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
 
 // Get all orders (admin)
 const getAllOrders = async (req, res) => {
@@ -59,7 +28,10 @@ const getOrders = async (req, res) => {
 // Get order by ID
 const getOrderById = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id)
+    const orderQuery = req.user.role === "admin"
+      ? { _id: req.params.id }
+      : { _id: req.params.id, user: req.user._id };
+    const order = await Order.findOne(orderQuery)
       .populate("user", "-password -otpHash -otpExpiresAt -otpAttempts -otpLastSentAt")
       .populate("products.product");
     if (!order) {
@@ -87,6 +59,31 @@ const updateOrder = async (req, res) => {
   }
 };
 
+const updateDeliveryDate = async (req, res) => {
+  try {
+    const { estimatedDeliveryAt } = req.body;
+    const parsedDeliveryDate = new Date(`${estimatedDeliveryAt}T12:00:00.000Z`);
+    if (
+      typeof estimatedDeliveryAt !== "string" ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(estimatedDeliveryAt) ||
+      Number.isNaN(parsedDeliveryDate.getTime()) ||
+      parsedDeliveryDate.toISOString().slice(0, 10) !== estimatedDeliveryAt
+    ) {
+      return res.status(400).json({ message: "Enter a valid delivery date." });
+    }
+
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+    order.estimatedDeliveryAt = parsedDeliveryDate;
+    await order.save();
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Delete order
 const deleteOrder = async (req, res) => {
   try {
@@ -102,10 +99,10 @@ const deleteOrder = async (req, res) => {
   }
 };
 module.exports = {
-  createOrder,
   getAllOrders,
   getOrders,
   getOrderById,
   updateOrder,
+  updateDeliveryDate,
   deleteOrder,
 };

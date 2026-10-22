@@ -18,7 +18,12 @@ const productSchema= new mongoose.Schema({
     },
     stock:{
         type:Number,
-        required:true
+        required:true,
+        min:0,
+        validate: {
+            validator: Number.isInteger,
+            message: 'Stock must be a whole number of grams'
+        }
     },
     imagesURL:{
         type:String,

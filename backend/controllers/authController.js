@@ -44,7 +44,7 @@ const sendOtp=async(user)=>{
     });
 
     try{
-        await sendEmail(user.email,'Your sign-in verification code',`Your verification code is ${otp}. It expires in 10 minutes.`);
+        await sendEmail(user.email,'Your sign-in verification code',`Your verification code for Homemade Diwali Faral is ${otp}. It expires in 10 minutes.`);
     }catch(error){
         await User.findByIdAndUpdate(user._id,{$unset:{otpHash:1,otpExpiresAt:1,otpAttempts:1,otpLastSentAt:1}});
         throw error;

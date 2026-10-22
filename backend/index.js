@@ -8,13 +8,16 @@ dotenv.config({ path: path.join(__dirname, ".env") });
 const connectDB = require("./config/db");
 app.use(cors(
     {
-        origin: ["http://localhost:3000", "http://127.0.0.1:3000",process.env.FRONTEND_URL],
+        origin: ["http://localhost:3000", "http://127.0.0.1:3000", process.env.FRONTEND_URL].filter(Boolean),
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true
     }
 ));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok' });
+});
 app.use('/api/auth', userRoutes);
 app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));

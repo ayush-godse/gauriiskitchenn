@@ -4,6 +4,13 @@ import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { clearCart } from '../redux/cartSlice';
 
+const DELIVERY_CITY = 'Ahilyanagar City';
+const getEstimatedDeliveryDate = () => {
+    const date = new Date();
+    date.setDate(date.getDate() + 4);
+    return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+};
+
 const Checkout = () => {
     const { user } = useContext(AuthContext);
     const cartItem = useSelector((state) => state.cart.cartItems);
@@ -19,7 +26,11 @@ const Checkout = () => {
     const [addressNotice, setAddressNotice] = useState('');
     const addressEdited = useRef(false);
     const totalPrice = cartItem.reduce((total, item) => total + item.price * item.quantity, 0);
-    const items = cartItem.map((item) => ({ product: item._id, quantity: item.quantity }));
+    const items = cartItem.map((item) => ({
+        product: item._id,
+        quantity: item.quantity,
+        sizeGrams: item.sizeGrams || 500,
+    }));
 
     useEffect(() => {
         if (!user?.token) return undefined;
@@ -116,6 +127,7 @@ const Checkout = () => {
                                 address: {
                                     FullName: address.fullName,
                                     Street: address.street,
+                                    City: DELIVERY_CITY,
                                     phone: address.phone,
                                 },
                             }),
@@ -181,8 +193,14 @@ const Checkout = () => {
                     required
                 />
                 <input
+                    type="text"
+                    placeholder="City"
+                    value={DELIVERY_CITY}
+                    readOnly
+                />
+                <input
                     type="tel"
-                    placeholder="10-digit phone number"
+                    placeholder="Enter receiver's phone number"
                     value={address.phone}
                     onChange={(event) => {
                         addressEdited.current = true;
@@ -194,6 +212,7 @@ const Checkout = () => {
                     required
                 />
                 <div className="checkout-summary">
+                    <p>Estimated delivery: {getEstimatedDeliveryDate()} (within 4 days)</p>
                     <h4>Total to Pay: ₹{totalPrice.toFixed(2)}</h4>
                     {addressNotice && <p role="status">{addressNotice}</p>}
                     {error && <p role="alert">{error}</p>}

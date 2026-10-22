@@ -20,15 +20,15 @@ const Cart = () => {
                 <>
                     <ul className="cart-items">
                         {items.map((item) => (
-                            <li className="cart-item" key={item._id}>
+                            <li className="cart-item" key={`${item._id}-${item.sizeGrams || 500}`}>
                                 <div className="cart-item-info">
-                                    <strong>{item.name}</strong>
+                                    <strong>{item.name} {item.sizeGrams === 1000 ? "(1 kg)" : item.sizeGrams === 500 ? "(500 g)" : ""}</strong>
                                     <span>₹{Number(item.price).toFixed(2)} each</span>
                                     <div className="cart-quantity-control" aria-label={`Quantity for ${item.name}`}>
                                         <button
                                             type="button"
                                             aria-label={`Decrease ${item.name} quantity`}
-                                            onClick={() => dispatch(decrementQuantity(item._id))}
+                                            onClick={() => dispatch(decrementQuantity({ _id: item._id, sizeGrams: item.sizeGrams }))}
                                             disabled={item.quantity <= 1}
                                         >
                                             −
@@ -37,8 +37,11 @@ const Cart = () => {
                                         <button
                                             type="button"
                                             aria-label={`Increase ${item.name} quantity`}
-                                            onClick={() => dispatch(incrementQuantity(item._id))}
-                                            disabled={typeof item.stock === "number" && item.quantity >= item.stock}
+                                            onClick={() => dispatch(incrementQuantity({ _id: item._id, sizeGrams: item.sizeGrams }))}
+                                            disabled={Number.isFinite(Number(item.stock)) && items
+                                                .filter((cartItem) => cartItem._id === item._id)
+                                                .reduce((grams, cartItem) => grams + cartItem.quantity * (cartItem.sizeGrams || 500), 0) +
+                                                (item.sizeGrams || 500) > item.stock}
                                         >
                                             +
                                         </button>
@@ -48,7 +51,7 @@ const Cart = () => {
                                 <button
                                     className="cart-remove-btn"
                                     type="button"
-                                    onClick={() => dispatch(removeFromCart(item._id))}
+                                    onClick={() => dispatch(removeFromCart({ _id: item._id, sizeGrams: item.sizeGrams }))}
                                 >
                                     Remove
                                 </button>
@@ -56,7 +59,7 @@ const Cart = () => {
                         ))}
                     </ul>
                     <p className="cart-total"><strong>Total</strong><strong>₹{total.toFixed(2)}</strong></p>
-                    <Link to="/checkout" className="shop-link">Continue to checkout</Link>
+                    <Link to="/checkout" className="shop-link">Continue</Link>
                 </>
             )}
         </section>

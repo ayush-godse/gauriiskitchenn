@@ -128,7 +128,7 @@ const EditProduct = () => {
                     />
                 </label>
                 <label>
-                    Price
+                    Price (per 500 g)
                     <input
                         name="price"
                         type="number"
@@ -149,7 +149,7 @@ const EditProduct = () => {
                     />
                 </label>
                 <label>
-                    Stock
+                    Stock (grams)
                     <input
                         name="stock"
                         type="number"

@@ -4,6 +4,12 @@ import ProductImage from "../components/ProductImage";
 import AddToCartButton from "../components/AddToCartButton";
 import "../style/product.css";
 
+const getEstimatedDeliveryDate = () => {
+    const date = new Date();
+    date.setDate(date.getDate() + 4);
+    return date.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+};
+
 const ProductDetails = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
@@ -68,10 +74,12 @@ const ProductDetails = () => {
             <h2>{product.name}</h2>
             <ProductImage product={product} className="product-detail-image" />
             {product.description && <p>{product.description}</p>}
-            {product.price != null && <p className="product-price">₹{Number(product.price).toFixed(2)}</p>}
-            {Number(product.stock) > 0
-                ? <p className="product-stock">{product.stock} in stock</p>
-                : <p className="product-out-of-stock">Out of stock</p>}
+            {Number(product.stock || 0) < 500 && (
+                <p className="product-out-of-stock">Out of stock</p>
+            )}
+            <p className="product-delivery-estimate">
+                Estimated delivery: {getEstimatedDeliveryDate()} (within 4 days)
+            </p>
             <AddToCartButton product={product} />
         </div>
     );

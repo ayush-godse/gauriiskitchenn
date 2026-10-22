@@ -2,6 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 
+const getEstimatedDeliveryDate = () => {
+    const date = new Date();
+    date.setDate(date.getDate() + 4);
+    return date.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+};
+
 const Home = () => {
     const location = useLocation();
     const [products, setProducts] = useState([]);
@@ -62,7 +68,16 @@ const Home = () => {
                 </div>
             </section>
             <section className="products-section" aria-labelledby="products-heading">
-                <h2 id="products-heading">Our Special Faral</h2>
+                <div className="shop-section-heading">
+                    <h2 id="products-heading">Our Special Faral</h2>
+                    <p className="shop-delivery-estimate">
+                        <span aria-hidden="true">📦</span>
+                        <span>
+                            Estimated delivery
+                            <strong>{getEstimatedDeliveryDate()}</strong>
+                        </span>
+                    </p>
+                </div>
                 {loading ? (
                     <p role="status">Loading products...</p>
                 ) : error ? (

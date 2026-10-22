@@ -63,6 +63,7 @@ const AdminDashboard = () => {
                     ["Products", stats?.totalproduct],
                     ["Orders", stats?.totalOrders],
                     ["Customers", stats?.totalUsers],
+                    ["Website visitors", stats?.totalVisitors],
                     ["Revenue", stats ? `₹${Number(stats.totalRevenue || 0).toLocaleString("en-IN")}` : undefined],
                 ].map(([label, value]) => (
                     <article className="admin-stat-card" key={label}>

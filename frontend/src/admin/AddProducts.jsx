@@ -67,7 +67,7 @@ const AddProduct = () => {
                 <textarea name="description" value={formData.description} onChange={handleChange} required />
             </label>
             <label>
-                Price
+                Price (per 500 g)
                 <input name="price" type="number" min="0" value={formData.price} onChange={handleChange} required />
             </label>
             <label>
@@ -75,8 +75,8 @@ const AddProduct = () => {
                 <input name="category" value={formData.category} onChange={handleChange} required />
             </label>
             <label>
-                Stock
-                <input name="stock" type="number" min="0" value={formData.stock} onChange={handleChange} required />
+                Stock (grams)
+                <input name="stock" type="number" min="0" step="1" value={formData.stock} onChange={handleChange} required />
             </label>
             <label>
                 Image

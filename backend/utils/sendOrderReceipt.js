@@ -11,8 +11,8 @@ const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character
 const formatCurrency = (amount) => `₹${Number(amount || 0).toFixed(2)}`;
 
 const sendOrderReceipt = async (order, customer, items) => {
-    const rows = items.map(({ name, quantity, price }) => ({
-        name: name || "Faral item",
+    const rows = items.map(({ name, quantity, sizeGrams, price }) => ({
+        name: `${name || "Faral item"} (${sizeGrams === 1000 ? "1 kg" : "500 g"})`,
         quantity,
         price,
     }));
@@ -27,7 +27,7 @@ const sendOrderReceipt = async (order, customer, items) => {
           <td style="padding:10px;border-bottom:1px solid #eee;text-align:right">${formatCurrency(item.price * item.quantity)}</td>
         </tr>`).join("");
     const name = order.address?.FullName || customer.name || "Customer";
-    const address = order.address?.Street || "";
+    const address = [order.address?.Street, order.address?.City].filter(Boolean).join(", ");
     const estimatedDelivery = order.estimatedDeliveryAt
         ? new Date(order.estimatedDeliveryAt).toLocaleDateString("en-IN", {
             day: "numeric",

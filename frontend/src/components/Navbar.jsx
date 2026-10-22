@@ -28,7 +28,7 @@ const Navbar = () => {
                 <li><Link to="/shop">Shop</Link></li>
                 <li><Link to="/cart">Cart({cartItemCount})</Link></li>
 
-                {user ? (
+                {user && (
                     <>
                         <li><Link to="/profile">{user.name}</Link></li>
                         {user.role === "admin" && <li><Link to="/admin">Admin</Link></li>}
@@ -37,11 +37,6 @@ const Navbar = () => {
                                 Logout
                             </button>
                         </li>
-                    </>
-                ) : (
-                    <>
-                        <li><Link to="/login">Login</Link></li>
-                        <li><Link to="/register">Register</Link></li>
                     </>
                 )}
             </ul>

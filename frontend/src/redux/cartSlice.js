@@ -11,6 +11,21 @@ const getStoredCartOwner = () => {
     return userId ? String(userId) : GUEST_CART_OWNER;
 };
 
+const getItemSize = (item) => Number(item.sizeGrams) || 500;
+const isSameVariant = (first, second) => (
+    first._id === second._id && getItemSize(first) === getItemSize(second)
+);
+const getReservedGrams = (items, productId) => items
+    .filter((item) => item._id === productId)
+    .reduce((total, item) => total + item.quantity * getItemSize(item), 0);
+const getVariantFromAction = (state, payload) => {
+    const variant = typeof payload === 'object' ? payload : { _id: payload };
+    return state.cartItems.find((item) => (
+        item._id === variant._id &&
+        (variant.sizeGrams === undefined || getItemSize(item) === variant.sizeGrams)
+    ));
+};
+
 const loadCartItems = (ownerId) => {
     const savedCart = localStorage.getItem(getCartStorageKey(ownerId));
     return savedCart ? JSON.parse(savedCart) : [];
@@ -19,16 +34,23 @@ const loadCartItems = (ownerId) => {
 const mergeCarts = (savedItems, guestItems) => {
     const mergedItems = savedItems.map((item) => ({ ...item }));
     guestItems.forEach((guestItem) => {
-        const existingItem = mergedItems.find((item) => item._id === guestItem._id);
+        const existingItem = mergedItems.find((item) => isSameVariant(item, guestItem));
+        const stock = Number(guestItem.stock);
+        const availableGrams = Number.isFinite(stock)
+            ? Math.max(0, stock - getReservedGrams(mergedItems, guestItem._id))
+            : Infinity;
+        const additionalQuantity = Math.min(
+            guestItem.quantity,
+            Math.floor(availableGrams / getItemSize(guestItem))
+        );
+        if (additionalQuantity <= 0) return;
+
         if (!existingItem) {
-            mergedItems.push({ ...guestItem });
+            mergedItems.push({ ...guestItem, quantity: additionalQuantity });
             return;
         }
 
-        const requestedQuantity = existingItem.quantity + guestItem.quantity;
-        existingItem.quantity = typeof existingItem.stock === 'number'
-            ? Math.min(requestedQuantity, existingItem.stock)
-            : requestedQuantity;
+        existingItem.quantity += additionalQuantity;
     });
     return mergedItems;
 };
@@ -59,34 +81,39 @@ const cartSlice = createSlice({
         },
         addToCart: (state, action) => {
             const item = action.payload;
-            if (typeof item.stock === 'number' && item.stock <= 0) return;
-            const existingItem = state.cartItems.find(cartItem => cartItem._id === item._id);
+            const itemSize = getItemSize(item);
+            const availableGrams = Number(item.stock) - getReservedGrams(state.cartItems, item._id);
+            if (Number.isFinite(availableGrams) && availableGrams < itemSize) return;
+            const existingItem = state.cartItems.find(cartItem => isSameVariant(cartItem, item));
             if (existingItem) {
-                if (typeof item.stock !== 'number' || existingItem.quantity < item.stock) {
-                    existingItem.quantity += 1;
-                }
+                existingItem.quantity += 1;
             } else {
                 state.cartItems=[...state.cartItems, { ...item, quantity: 1 }];
             }
             localStorage.setItem(getCartStorageKey(state.ownerId), JSON.stringify(state.cartItems));
         },
         incrementQuantity: (state, action) => {
-            const item = state.cartItems.find((cartItem) => cartItem._id === action.payload);
-            if (item && (typeof item.stock !== 'number' || item.quantity < item.stock)) {
+            const item = getVariantFromAction(state, action.payload);
+            const stock = Number(item?.stock);
+            if (item && (!Number.isFinite(stock) ||
+                getReservedGrams(state.cartItems, item._id) + getItemSize(item) <= stock)) {
                 item.quantity += 1;
                 localStorage.setItem(getCartStorageKey(state.ownerId), JSON.stringify(state.cartItems));
             }
         },
         decrementQuantity: (state, action) => {
-            const item = state.cartItems.find((cartItem) => cartItem._id === action.payload);
+            const item = getVariantFromAction(state, action.payload);
             if (item && item.quantity > 1) {
                 item.quantity -= 1;
                 localStorage.setItem(getCartStorageKey(state.ownerId), JSON.stringify(state.cartItems));
             }
         },
         removeFromCart: (state, action) => {
-           const itemId = action.payload;
-            state.cartItems = state.cartItems.filter((item) => item._id !== itemId);
+            const variant = typeof action.payload === 'object' ? action.payload : { _id: action.payload };
+            state.cartItems = state.cartItems.filter((item) => !(
+                item._id === variant._id &&
+                (variant.sizeGrams === undefined || getItemSize(item) === variant.sizeGrams)
+            ));
             localStorage.setItem(getCartStorageKey(state.ownerId), JSON.stringify(state.cartItems));
         },
         clearCart: (state) => {

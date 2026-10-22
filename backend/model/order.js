@@ -5,6 +5,7 @@ const orderSchema = new mongoose.Schema({
         {
             product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
             quantity: { type: Number, required: true,min:1 },
+            sizeGrams: { type: Number, enum: [500, 1000], required: true, default: 500 },
             price: { type: Number, required: true }
         }
     ],
@@ -12,12 +13,13 @@ const orderSchema = new mongoose.Schema({
     address: { 
         FullName: { type: String, required: true },
         Street: { type: String, required: true },
+        City: { type: String, required: true },
         phone: { type: String, required: true, match: /^[0-9]{10}$/ }
     },
     paymentId: { type: String},
     paymentStatus: { type: String, enum: ["Paid", "Unpaid"], default: "Unpaid" },
     receiptEmailSentAt: { type: Date },
-    status: { type: String, enum: ["Pending", "Completed","shipped", "Cancelled"], default: "Pending" },
+    status: { type: String, enum: ["Pending", "Processing", "Shipped", "Delivered", "Completed", "shipped", "Cancelled"], default: "Pending" },
     estimatedDeliveryAt: {
         type: Date,
         default: () => new Date(Date.now() + 4 * 24 * 60 * 60 * 1000)

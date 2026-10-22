@@ -12,9 +12,9 @@ const ProductCard = ({ product }) => {
                 <ProductImage product={product} className="product-image" />
                 <h3 className="product-Name">{product.name}</h3>
             </Link>
-            <p className="product-price">₹{Number(product.price ?? 0).toFixed(2)}</p>
-            {Number(product.stock) > 0 && <p className="product-stock">{product.stock} in stock</p>}
-            {Number(product.stock) <= 0 && <p className="product-out-of-stock">Out of stock</p>}
+            {Number(product.stock) < 500 && (
+                <p className="product-out-of-stock">Out of stock</p>
+            )}
             <AddToCartButton product={product} className="product-card-add-btn" />
             <Link to={`/product/${productId}`} className="product-details-link">
                 View Details

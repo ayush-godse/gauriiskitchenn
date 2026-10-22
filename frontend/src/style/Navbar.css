@@ -62,6 +62,7 @@
 
 .navbar-links a,
 .navbar-links .logout-btn {
+  position: relative;
   display: inline-flex;
   min-height: 40px;
   align-items: center;
@@ -75,7 +76,26 @@
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.navbar-links a::after {
+  position: absolute;
+  right: 12px;
+  bottom: 4px;
+  left: 12px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--gold);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 180ms ease;
 }
 
 .navbar-links a:hover,
@@ -83,6 +103,26 @@
   border-color: rgba(254, 189, 105, 0.65);
   background: #232f3e;
   color: var(--gold);
+  box-shadow: 0 4px 12px rgba(254, 189, 105, 0.16);
+  transform: translateY(-2px);
+}
+
+.navbar-links a:hover::after {
+  transform: scaleX(1);
+}
+
+.navbar-links a:focus-visible,
+.navbar-links .logout-btn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar-links a,
+  .navbar-links .logout-btn,
+  .navbar-links a::after {
+    transition: none;
+  }
 }
 
 @media (max-width: 760px) {
