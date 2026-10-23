@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import useOtpCooldown, { getOtpRetryAfterSeconds } from "../hooks/useOtpCooldown";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -9,6 +10,7 @@ const Register = () => {
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [error, setError] = useState("");
+  const [cooldown, setCooldown] = useOtpCooldown();
   const { login } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
@@ -28,9 +30,15 @@ const Register = () => {
       const data = await res.json();
 
       if (!res.ok) {
+        if (res.status === 429) {
+          setCooldown(getOtpRetryAfterSeconds(res, data));
+          setError(data.message || "Please wait before requesting another code.");
+          return;
+        }
         throw new Error(data.message || "Registration failed");
       }
       setOtpSent(true);
+      setCooldown(data.resendAfterSeconds || 60);
     } catch (error) {
       console.error("Registration failed:", error);
       setError(error.message || "Something went wrong");
@@ -68,8 +76,14 @@ const Register = () => {
       });
       const data = await res.json();
       if (!res.ok) {
+        if (res.status === 429) {
+          setCooldown(getOtpRetryAfterSeconds(res, data));
+          setError(data.message || "Please wait before requesting another code.");
+          return;
+        }
         throw new Error(data.message || "Could not resend verification code");
       }
+      setCooldown(data.resendAfterSeconds || 60);
     } catch (error) {
       console.error("Resending registration code failed:", error);
       setError(error.message || "Something went wrong");
@@ -96,7 +110,9 @@ const Register = () => {
               title="Enter a 10-digit phone number"
               required
             />
-            <button type="submit">Send email code</button>
+            <button type="submit" disabled={cooldown > 0}>
+              {cooldown > 0 ? `Try again in ${cooldown}s` : "Send email code"}
+            </button>
             <p>Already registered? <Link to="/login" state={{ from: returnTo }}>Sign in</Link></p>
           </>
         ) : (
@@ -113,7 +129,9 @@ const Register = () => {
               required
             />
             <button type="submit">Verify and register</button>
-            <button type="button" onClick={handleResendOtp}>Resend code</button>
+            <button type="button" onClick={handleResendOtp} disabled={cooldown > 0}>
+              {cooldown > 0 ? `Resend code in ${cooldown}s` : "Resend code"}
+            </button>
           </>
         )}
         {error && <p role="alert">{error}</p>}

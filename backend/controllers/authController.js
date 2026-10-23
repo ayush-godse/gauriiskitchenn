@@ -6,7 +6,13 @@ const OTP_EXPIRY_MS=10*60*1000;
 const OTP_RESEND_DELAY_MS=60*1000;
 const handleOtpRequestError=(res,error,context)=>{
     if(error.status){
-        return res.status(error.status).json({message:error.message});
+        if(error.retryAfterSeconds){
+            res.set('Retry-After',String(error.retryAfterSeconds));
+        }
+        return res.status(error.status).json({
+            message:error.message,
+            ...(error.retryAfterSeconds && {retryAfterSeconds:error.retryAfterSeconds})
+        });
     }
     if(error.code==='EMAIL_CONFIG_MISSING' || error.emailDeliveryFailure){
         console.error(`${context}: email delivery failed (${error.code || 'SMTP_ERROR'}).`);
@@ -29,6 +35,7 @@ const sendOtp=async(user)=>{
         const retryAfter=Math.ceil((OTP_RESEND_DELAY_MS-(now-user.otpLastSentAt.getTime()))/1000);
         const error=new Error(`Please wait ${retryAfter} seconds before requesting another code.`);
         error.status=429;
+        error.retryAfterSeconds=retryAfter;
         throw error;
     }
 
@@ -49,6 +56,7 @@ const sendOtp=async(user)=>{
         await User.findByIdAndUpdate(user._id,{$unset:{otpHash:1,otpExpiresAt:1,otpAttempts:1,otpLastSentAt:1}});
         throw error;
     }
+    return Math.ceil(OTP_RESEND_DELAY_MS/1000);
 };
 const registerUser= async(req,res)=>{
     const {name,email,phone}=req.body;
@@ -59,14 +67,14 @@ const registerUser= async(req,res)=>{
         const existingUser= await User.findOne({email});
         if(existingUser){
             if(!existingUser.verified && existingUser.name===name && existingUser.phone===phone){
-                await sendOtp(existingUser);
-                return res.json({message:"Verification code sent to your email."});
+                const resendAfterSeconds=await sendOtp(existingUser);
+                return res.json({message:"Verification code sent to your email.",resendAfterSeconds});
             }
             return res.status(400).json({message:"User already exists"});
         }
         const user = await User.create({ name, email, phone });
-        await sendOtp(user);
-        res.status(201).json({message:"Verification code sent to your email."});
+        const resendAfterSeconds=await sendOtp(user);
+        res.status(201).json({message:"Verification code sent to your email.",resendAfterSeconds});
     }catch(error){
         return handleOtpRequestError(res,error,'Registration OTP request failed');
     }
@@ -79,8 +87,8 @@ const loginUser= async(req,res)=>{
         if(!user){
             return res.status(404).json({message:"No account found for this email."});
         }
-        await sendOtp(user);
-        res.json({message:"Verification code sent to your email."});
+        const resendAfterSeconds=await sendOtp(user);
+        res.json({message:"Verification code sent to your email.",resendAfterSeconds});
     }catch(error){
         return handleOtpRequestError(res,error,'Login OTP request failed');
     }
