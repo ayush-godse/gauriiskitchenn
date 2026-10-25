@@ -6,15 +6,31 @@ const sendEmail= async(to,subject,text,html)=>{
         throw error;
     }
 
-    const transporter= nodemailer.createTransport({
-        service:'Gmail',
-        auth:{
-            user:process.env.EMAIL_USER,
-            pass:process.env.EMAIL_PASS
-        }
-    });
+    const auth={
+        user:process.env.EMAIL_USER,
+        pass:process.env.EMAIL_PASS
+    };
+    const smtpHost=process.env.SMTP_HOST;
+    const smtpPort=Number(process.env.SMTP_PORT || (smtpHost ? 2525 : 465));
+    if(!Number.isInteger(smtpPort) || smtpPort<1 || smtpPort>65535){
+        const error=new Error('SMTP_PORT must be a valid port number.');
+        error.code='SMTP_CONFIG_INVALID';
+        throw error;
+    }
+
+    const transporter= smtpHost
+        ? nodemailer.createTransport({
+            host:smtpHost,
+            port:smtpPort,
+            secure:smtpPort===465,
+            auth
+        })
+        : nodemailer.createTransport({
+            service:'Gmail',
+            auth
+        });
     const mailOptions={
-        from:process.env.EMAIL_USER,
+        from:process.env.EMAIL_FROM || process.env.EMAIL_USER,
         to,
         subject,
         text,

@@ -28,7 +28,9 @@ Set these in the Render service's environment settings when enabling the related
 
 | Variables | Purpose |
 | --- | --- |
-| `EMAIL_USER`, `EMAIL_PASS` | Sending login OTPs and order emails. |
+| `EMAIL_USER`, `EMAIL_PASS` | SMTP username and password for login OTPs and order emails. |
+| `SMTP_HOST`, `SMTP_PORT` | Optional SMTP server settings. Set the host and use port `2525` for an SMTP provider that supports it. When `SMTP_HOST` is unset, the app keeps using Gmail SMTP. |
+| `EMAIL_FROM` | Optional verified sender address; defaults to `EMAIL_USER`. |
 | `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | Product image uploads. |
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | Razorpay payments. |
 | `FRONTEND_URL` | Additional allowed browser origin if the frontend is hosted separately. Leave unset when using the single-service deployment. |

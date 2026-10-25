@@ -16,6 +16,12 @@ services:
         sync: false
       - key: EMAIL_PASS
         sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
       - key: CLOUDINARY_CLOUD_NAME
         sync: false
       - key: CLOUDINARY_API_KEY
