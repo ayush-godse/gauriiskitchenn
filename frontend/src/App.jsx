@@ -11,6 +11,7 @@ import Checkout from "./pages/checkOut";
 import AddProduct from "./admin/AddProducts";
 import EditProduct from "./admin/EditProducts";
 import AdminProducts from "./admin/AdminProducts";
+import AdminGallery from "./admin/AdminGallery";
 import AdminOrders from "./admin/AdminOrder";
 import AdminDashboard from "./admin/AdminDashboard";
 import Privacy from "./pages/Privacy";
@@ -76,6 +77,7 @@ function App() {
                         <Route path="/admin" element={<AdminDashboard />} />
                         <Route path="/admin/add-products" element={<AddProduct />} />
                         <Route path="/admin/products" element={<AdminProducts />} />
+                        <Route path="/admin/gallery" element={<AdminGallery />} />
                         <Route path="/admin/products/:id/edit" element={<EditProduct />} />
                         <Route path="/admin/user" element={<div className="page-container"><h1>Users</h1></div>} />
                         <Route path="/admin/orders" element={<div className="page-container"><AdminOrders /></div>} />

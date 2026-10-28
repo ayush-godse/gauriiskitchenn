@@ -23,6 +23,7 @@ app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/payments', require('./routes/paymentRoutes'));
 app.use('/api/analytics', require('./routes/analyticsRoutes.js'));
+app.use('/api/gallery', require('./routes/galleryRoutes'));
 if(process.env.NODE_ENV ==='production'){
     app.use(express.static(path.join(__dirname,'../frontend/build')));
     app.get('/{*splat}',(req,res)=>{

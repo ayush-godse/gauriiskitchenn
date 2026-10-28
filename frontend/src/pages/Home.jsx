@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 import ProductLoading from "../components/ProductLoading";
+import ProductGalleryModal from "../components/ProductGalleryModal";
 import { apiUrl } from "../api";
 
 const getEstimatedDeliveryDate = () => {
@@ -12,6 +13,7 @@ const getEstimatedDeliveryDate = () => {
 
 const Home = () => {
     const location = useLocation();
+    const [galleryOpen, setGalleryOpen] = useState(false);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -60,7 +62,7 @@ const Home = () => {
                     <div className="banner-diya" aria-hidden="true">🪔</div>
                     <p className="banner-attribution">Crafted with love by <strong>Gauri Godse</strong></p>
                     <h1>Celebrate Diwali with Authentic Homemade Faral</h1>
-                    <p className="banner-copy">Traditional recipes, fresh ingredients, and festive happiness from Ahilyanagar.</p>
+                    <p className="banner-copy">उत्तम दर्जाचा कच्चा माल, शुद्ध तेल आणि संपूर्ण स्वच्छतेची काळजी घेऊन घरगुती पद्धतीने बनवलेले स्वादिष्ट पदार्थ!</p>
                     <div className="banner-badges">
                         <span>Freshly prepared</span>
                         <span>Traditional recipes</span>
@@ -71,6 +73,9 @@ const Home = () => {
                     </p>
                     <p className="availability-note">Currently available only in Ahilyanagar City</p>
                     <Link to="/shop" className="shop-link">Shop Faral</Link>
+                    <button type="button" className="gallery-open-button" onClick={() => setGalleryOpen(true)}>
+                        View Our Product Photos
+                    </button>
                 </div>
             </section>
             <section className="products-section" aria-labelledby="products-heading">
@@ -101,6 +106,7 @@ const Home = () => {
                     </>
                 )}
             </section>
+            {galleryOpen && <ProductGalleryModal onClose={() => setGalleryOpen(false)} />}
         </div>
     );
 };

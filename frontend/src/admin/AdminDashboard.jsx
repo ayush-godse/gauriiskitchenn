@@ -88,6 +88,10 @@ const AdminDashboard = () => {
                     <strong>Manage products</strong>
                     <span>View products and edit their details.</span>
                 </Link>
+                <Link to="/admin/gallery" className="admin-action-card">
+                    <strong>Manage photo gallery</strong>
+                    <span>Upload, replace, or remove up to 10 customer-facing product photos.</span>
+                </Link>
             </div>
         </section>
     );
