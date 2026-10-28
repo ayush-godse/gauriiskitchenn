@@ -7,8 +7,7 @@ import { apiUrl } from "../api";
 import "../style/product.css";
 
 const getEstimatedDeliveryDate = () => {
-    const date = new Date();
-    date.setDate(date.getDate() + 4);
+    const date = new Date(2026, 10, 5);
     return date.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
 };
 
@@ -80,7 +79,7 @@ const ProductDetails = () => {
                 <p className="product-out-of-stock">Out of stock</p>
             )}
             <p className="product-delivery-estimate">
-                Estimated delivery: {getEstimatedDeliveryDate()} (within 4 days)
+                Estimated delivery: {getEstimatedDeliveryDate()}
             </p>
             <AddToCartButton product={product} />
         </div>

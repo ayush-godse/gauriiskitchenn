@@ -9,8 +9,7 @@ const DELIVERY_CITY = 'Ahilyanagar City';
 const FREE_DELIVERY_THRESHOLD = 1000;
 const DELIVERY_FEE = 50;
 const getEstimatedDeliveryDate = () => {
-    const date = new Date();
-    date.setDate(date.getDate() + 4);
+    const date = new Date(2026, 10, 5);
     return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
 };
 
@@ -230,7 +229,7 @@ const Checkout = () => {
                     required
                 />
                 <div className="checkout-summary">
-                    <p>Estimated delivery: {getEstimatedDeliveryDate()} (within 4 days)</p>
+                    <p>Estimated delivery: {getEstimatedDeliveryDate()}</p>
                     <p className="delivery-promotion">Free delivery on orders of ₹{FREE_DELIVERY_THRESHOLD.toLocaleString('en-IN')} or more!</p>
                     {deliveryFee === 0 ? (
                         <p className="free-delivery-unlocked" role="status" aria-live="polite">
