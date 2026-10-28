@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { apiUrl } from "../api";
 
 const AdminDashboard = () => {
     const { user } = useContext(AuthContext);
@@ -15,7 +16,7 @@ const AdminDashboard = () => {
         const controller = new AbortController();
         const fetchStats = async () => {
             try {
-                const response = await fetch("/api/analytics", {
+                const response = await fetch(apiUrl("/api/analytics"), {
                     headers: { Authorization: `Bearer ${user.token}` },
                     signal: controller.signal,
                 });

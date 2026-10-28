@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import { apiUrl } from '../api';
 
 const AdminOrders = () => {
     const { user } = useContext(AuthContext);
@@ -10,7 +11,7 @@ const AdminOrders = () => {
 
     useEffect(() => {
         const fetchOrders = async () => {
-            const res = await fetch('/api/orders', {
+            const res = await fetch(apiUrl('/api/orders'), {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
             const data = await res.json();
@@ -20,7 +21,7 @@ const AdminOrders = () => {
     }, [user]);
 
     const updateStatus = async (id, status) => {
-        const res = await fetch(`/api/orders/${id}/status`, {
+        const res = await fetch(apiUrl(`/api/orders/${id}/status`), {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${user.token}` },
             body: JSON.stringify({ status })
@@ -36,7 +37,7 @@ const AdminOrders = () => {
         setSavingDeliveryDate(id);
         setDeliveryDateError('');
         try {
-            const res = await fetch(`/api/orders/${id}/delivery-date`, {
+            const res = await fetch(apiUrl(`/api/orders/${id}/delivery-date`), {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

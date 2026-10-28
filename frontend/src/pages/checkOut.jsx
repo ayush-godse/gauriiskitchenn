@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { clearCart } from '../redux/cartSlice';
+import { apiUrl } from '../api';
 
 const DELIVERY_CITY = 'Ahilyanagar City';
 const getEstimatedDeliveryDate = () => {
@@ -38,7 +39,7 @@ const Checkout = () => {
         const controller = new AbortController();
         const loadSavedAddress = async () => {
             try {
-                const response = await fetch('/api/orders/myorders', {
+                const response = await fetch(apiUrl('/api/orders/myorders'), {
                     headers: { Authorization: `Bearer ${user.token}` },
                     signal: controller.signal,
                 });
@@ -84,7 +85,7 @@ const Checkout = () => {
         setLoading(true);
         setError('');
         try {
-            const orderResponse = await fetch('/api/payments/create-order', {
+            const orderResponse = await fetch(apiUrl('/api/payments/create-order'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -115,7 +116,7 @@ const Checkout = () => {
                 },
                 handler: async (paymentResponse) => {
                     try {
-                        const verifyResponse = await fetch('/api/payments/verify-payment', {
+                        const verifyResponse = await fetch(apiUrl('/api/payments/verify-payment'), {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',

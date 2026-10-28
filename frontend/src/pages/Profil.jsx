@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { apiUrl } from "../api";
 
 const getOrderDate = (order) => {
     if (order.createdAt) return new Date(order.createdAt);
@@ -35,7 +36,7 @@ const Profile = () => {
         const controller = new AbortController();
         const fetchMyOrders = async () => {
             try {
-                const response = await fetch("/api/orders/myorders", {
+                const response = await fetch(apiUrl("/api/orders/myorders"), {
                     headers: { Authorization: `Bearer ${user.token}` },
                     signal: controller.signal,
                 });

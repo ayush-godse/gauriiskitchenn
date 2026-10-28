@@ -16,6 +16,7 @@ import AdminDashboard from "./admin/AdminDashboard";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Profile from "./pages/Profil";
+import { apiUrl } from "./api";
 import "./style/Navbar.css";
 import "./style/product.css";
 
@@ -38,7 +39,7 @@ function App() {
             localStorage.setItem("websiteVisitorId", visitorId);
         }
 
-        fetch("/api/analytics/visit", {
+        fetch(apiUrl("/api/analytics/visit"), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ visitorId }),

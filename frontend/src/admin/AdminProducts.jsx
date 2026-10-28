@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import ProductImage from "../components/ProductImage";
+import { apiUrl } from "../api";
 
 const AdminProducts = () => {
     const { user } = useContext(AuthContext);
@@ -20,7 +21,7 @@ const AdminProducts = () => {
         const controller = new AbortController();
         const fetchProducts = async () => {
             try {
-                const response = await fetch("/api/products", { signal: controller.signal });
+                const response = await fetch(apiUrl("/api/products"), { signal: controller.signal });
                 const data = await response.json();
                 if (!response.ok) {
                     throw new Error(data.message || "Could not load products.");
@@ -46,7 +47,7 @@ const AdminProducts = () => {
         if (!window.confirm("Delete this product? This cannot be undone.")) return;
 
         try {
-            const response = await fetch(`/api/products/${id}`, {
+            const response = await fetch(apiUrl(`/api/products/${id}`), {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${user.token}` },
             });

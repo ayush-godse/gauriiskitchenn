@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import ProductImage from "../components/ProductImage";
+import { apiUrl } from "../api";
 
 const EditProduct = () => {
     const { id } = useParams();
@@ -29,7 +30,7 @@ const EditProduct = () => {
         const controller = new AbortController();
         const fetchProduct = async () => {
             try {
-                const response = await fetch(`/api/products/${id}`, { signal: controller.signal });
+                const response = await fetch(apiUrl(`/api/products/${id}`), { signal: controller.signal });
                 const data = await response.json();
                 if (!response.ok) {
                     throw new Error(data.message || "Could not load this product.");
@@ -69,7 +70,7 @@ const EditProduct = () => {
         if (image) data.append("image", image);
 
         try {
-            const response = await fetch(`/api/products/${id}`, {
+            const response = await fetch(apiUrl(`/api/products/${id}`), {
                 method: "PUT",
                 headers: { Authorization: `Bearer ${user.token}` },
                 body: data,

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
+import { apiUrl } from "../api";
 
 const getEstimatedDeliveryDate = () => {
     const date = new Date();
@@ -19,7 +20,7 @@ const Home = () => {
 
         const fetchProducts = async () => {
             try {
-                const response = await fetch("/api/products");
+                const response = await fetch(apiUrl("/api/products"));
                 if (!response.ok) {
                     throw new Error("Could not load products.");
                 }

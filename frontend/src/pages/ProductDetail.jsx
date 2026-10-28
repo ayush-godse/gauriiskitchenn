@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import ProductImage from "../components/ProductImage";
 import AddToCartButton from "../components/AddToCartButton";
+import { apiUrl } from "../api";
 import "../style/product.css";
 
 const getEstimatedDeliveryDate = () => {
@@ -21,7 +22,7 @@ const ProductDetails = () => {
 
         const fetchProduct = async () => {
             try {
-                const res = await fetch(`/api/products/${id}`);
+                const res = await fetch(apiUrl(`/api/products/${id}`));
                 if (!res.ok) {
                     throw new Error("Could not load this product. Please try again.");
                 }

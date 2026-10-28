@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import useOtpCooldown, { getOtpRetryAfterSeconds } from "../hooks/useOtpCooldown";
+import { apiUrl } from "../api";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -18,7 +19,7 @@ const Login = () => {
         e.preventDefault();
         try {
             setError("");
-            const res = await fetch("/api/auth/login", {
+            const res = await fetch(apiUrl("/api/auth/login"), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email }),
@@ -46,7 +47,7 @@ const Login = () => {
         e.preventDefault();
         try {
             setError("");
-            const res = await fetch("/api/auth/verify-otp", {
+            const res = await fetch(apiUrl("/api/auth/verify-otp"), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, otp }),
@@ -66,7 +67,7 @@ const Login = () => {
     const handleResendOtp = async () => {
         try {
             setError("");
-            const res = await fetch("/api/auth/login", {
+            const res = await fetch(apiUrl("/api/auth/login"), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email }),
