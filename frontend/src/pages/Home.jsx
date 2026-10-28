@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
+import ProductLoading from "../components/ProductLoading";
 import { apiUrl } from "../api";
 
 const getEstimatedDeliveryDate = () => {
@@ -84,7 +85,7 @@ const Home = () => {
                     </p>
                 </div>
                 {loading ? (
-                    <p role="status">Loading products...</p>
+                    <ProductLoading />
                 ) : error ? (
                     <p role="alert">{error}</p>
                 ) : products.length === 0 ? (

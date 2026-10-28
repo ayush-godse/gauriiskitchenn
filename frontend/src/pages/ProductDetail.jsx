@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import ProductImage from "../components/ProductImage";
 import AddToCartButton from "../components/AddToCartButton";
+import ProductLoading from "../components/ProductLoading";
 import { apiUrl } from "../api";
 import "../style/product.css";
 
@@ -50,7 +51,7 @@ const ProductDetails = () => {
         };
     }, [id]);
 
-    if (loading) return <div className="product-details" role="status">Loading product...</div>;
+    if (loading) return <ProductLoading variant="detail" />;
     if (error) {
         return (
             <div className="product-details" role="alert">
