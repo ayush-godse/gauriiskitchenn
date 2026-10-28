@@ -27,7 +27,7 @@ const sendOrderReceipt = async (order, customer, items) => {
           <td style="padding:10px;border-bottom:1px solid #eee;text-align:right">${formatCurrency(item.price * item.quantity)}</td>
         </tr>`).join("");
     const name = order.address?.FullName || customer.name || "Customer";
-    const address = [order.address?.Street, order.address?.City].filter(Boolean).join(", ");
+    const address = [order.address?.Street, order.address?.Area, order.address?.City].filter(Boolean).join(", ");
     const estimatedDelivery = order.estimatedDeliveryAt
         ? new Date(order.estimatedDeliveryAt).toLocaleDateString("en-IN", {
             day: "numeric",
@@ -46,6 +46,7 @@ const sendOrderReceipt = async (order, customer, items) => {
         "ORDER SUMMARY",
         textItems,
         "",
+        `Delivery: ${Number(order.deliveryFee || 0) === 0 ? "Free" : formatCurrency(order.deliveryFee)}`,
         `Total: ${formatCurrency(order.totalAmount)}`,
         "",
         `Delivery address: ${address}`,
@@ -70,6 +71,7 @@ const sendOrderReceipt = async (order, customer, items) => {
           </tr></thead>
           <tbody>${htmlItems}</tbody>
         </table>
+        <p style="text-align:right">Delivery: ${Number(order.deliveryFee || 0) === 0 ? "Free" : formatCurrency(order.deliveryFee)}</p>
         <p style="text-align:right;font-size:18px"><strong>Total: ${formatCurrency(order.totalAmount)}</strong></p>
         <h3>Delivery details</h3>
         <p>${escapeHtml(address)}<br>Phone: ${escapeHtml(order.address?.phone || "")}

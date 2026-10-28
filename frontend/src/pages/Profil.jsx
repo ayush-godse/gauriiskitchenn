@@ -98,7 +98,7 @@ const Profile = () => {
                             <div className="order-history-details">
                                 <p><strong>Total:</strong> ₹{Number(order.totalAmount || 0).toFixed(2)}</p>
                                 <p><strong>Payment:</strong> {order.paymentStatus || (order.paymentId ? "Paid" : "Unpaid")}</p>
-                                <p><strong>Delivering to:</strong> {order.address?.FullName}, {order.address?.Street}{order.address?.City ? `, ${order.address.City}` : ''} · {order.address?.phone}</p>
+                                <p><strong>Delivering to:</strong> {order.address?.FullName}, {[order.address?.Street, order.address?.Area, order.address?.City].filter(Boolean).join(', ')} · {order.address?.phone}</p>
                                 <p><strong>Estimated delivery:</strong> {formatDate(getEstimatedDelivery(order))}</p>
                             </div>
                         </article>

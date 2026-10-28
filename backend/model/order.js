@@ -10,9 +10,11 @@ const orderSchema = new mongoose.Schema({
         }
     ],
     totalAmount: { type: Number, required: true },
+    deliveryFee: { type: Number, default: 0 },
     address: { 
         FullName: { type: String, required: true },
         Street: { type: String, required: true },
+        Area: { type: String, required: true },
         City: { type: String, required: true },
         phone: { type: String, required: true, match: /^[0-9]{10}$/ }
     },

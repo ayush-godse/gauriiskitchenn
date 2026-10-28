@@ -5,6 +5,9 @@ const Order = require("../model/order");
 const Product = require("../model/product");
 const sendOrderReceipt = require("../utils/sendOrderReceipt");
 
+const FREE_DELIVERY_THRESHOLD = 1000;
+const DELIVERY_FEE = 50;
+
 const getRazorpayClient = () => {
   const keyId = process.env.RAZORPAY_KEY_ID;
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
@@ -94,7 +97,8 @@ const getCartDetails = async (items) => {
     (total, item) => total + item.price * item.quantity,
     0
   );
-  const amountInPaise = Math.round(totalAmount * 100);
+  const deliveryFee = totalAmount >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE;
+  const amountInPaise = Math.round((totalAmount + deliveryFee) * 100);
   if (!Number.isSafeInteger(amountInPaise) || amountInPaise < 100) {
     const error = new Error("The cart total must be at least ₹1.");
     error.status = 400;
@@ -107,7 +111,7 @@ const getCartDetails = async (items) => {
     .update(JSON.stringify(canonicalItems))
     .digest("hex");
 
-  return { orderProducts, amountInPaise, cartHash, receiptItems };
+  return { orderProducts, amountInPaise, cartHash, receiptItems, deliveryFee };
 };
 
 const sendReceiptIfNeeded = async (order, customer, receiptItems) => {
@@ -182,7 +186,7 @@ const verifyPayment = async (req, res) => {
     }
 
     const { client } = getRazorpayClient();
-    const { orderProducts, amountInPaise, cartHash, receiptItems } = await getCartDetails(req.body.items);
+    const { orderProducts, amountInPaise, cartHash, receiptItems, deliveryFee } = await getCartDetails(req.body.items);
     const order = await client.orders.fetch(razorpay_order_id);
     const payment = await client.payments.fetch(razorpay_payment_id);
     const expectedSignature = crypto
@@ -220,8 +224,8 @@ const verifyPayment = async (req, res) => {
         return res.status(409).json({ message: "Payment has not been captured." });
       }
     }
-    if (!req.body.address?.FullName || !req.body.address?.Street || !req.body.address?.City || !/^[0-9]{10}$/.test(req.body.address?.phone || "")) {
-      return res.status(400).json({ message: "Enter your full name, street address, city, and a valid 10-digit phone number." });
+    if (!req.body.address?.FullName || !req.body.address?.Street || !req.body.address?.Area || !req.body.address?.City || !/^[0-9]{10}$/.test(req.body.address?.phone || "")) {
+      return res.status(400).json({ message: "Enter your full name, street address, area, city, and a valid 10-digit phone number." });
     }
 
     const existingOrder = await Order.findOne({ paymentId: razorpay_payment_id });
@@ -241,6 +245,7 @@ const verifyPayment = async (req, res) => {
         user: req.user._id,
         products: orderProducts,
         totalAmount: amountInPaise / 100,
+        deliveryFee,
         address: req.body.address,
         paymentId: razorpay_payment_id,
         paymentStatus: "Paid",

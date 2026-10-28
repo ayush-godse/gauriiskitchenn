@@ -65,6 +65,37 @@
   font-weight: 600;
 }
 
+.phone-order-note {
+  margin: 0 0 18px;
+  color: #684215;
+  font-weight: 600;
+}
+
+.phone-order-note a {
+  color: #a63d12;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.phone-order-note a:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid #a63d12;
+  outline-offset: 3px;
+}
+
+.availability-note {
+  width: fit-content;
+  margin: 0 auto 18px;
+  padding: 6px 14px;
+  border: 1px solid rgba(255, 152, 0, 0.3);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.78);
+  color: #684215;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
 .shop-link {
   display: inline-flex;
   min-height: 46px;
@@ -793,8 +824,53 @@
   border-top: 1px dashed var(--border);
 }
 
+.delivery-promotion {
+  margin-bottom: 10px;
+  color: var(--text-light);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.free-delivery-unlocked {
+  width: fit-content;
+  margin: 0 0 12px;
+  padding: 8px 14px;
+  border: 1px solid #a8d5ad;
+  border-radius: 12px;
+  background: #edf8ee;
+  color: #236331;
+  font-weight: 700;
+  animation: delivery-unlocked 240ms ease-out;
+}
+
+.delivery-progress {
+  margin-bottom: 12px;
+  color: #8a4b16;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.checkout-price-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 6px 0;
+  color: var(--text-light);
+}
+
 .checkout-summary h4 {
   margin-bottom: 12px;
+}
+
+@keyframes delivery-unlocked {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 table {

@@ -104,7 +104,8 @@ const AdminOrders = () => {
                                                     <p><strong>Customer name:</strong> {order.user?.name || order.address?.FullName || 'N/A'}</p>
                                                     <p><strong>Customer phone number:</strong> {order.user?.phone || 'N/A'}</p>
                                                     <p><strong>Receiver's number:</strong> {order.address?.phone || 'N/A'}</p>
-                                                    <p><strong>Delivery address:</strong> {[order.address?.Street, order.address?.City].filter(Boolean).join(', ') || 'N/A'}</p>
+                                                    <p><strong>Delivery address:</strong> {[order.address?.Street, order.address?.Area, order.address?.City].filter(Boolean).join(', ') || 'N/A'}</p>
+                                                    <p><strong>Delivery charge:</strong> {Number(order.deliveryFee || 0) === 0 ? 'Free' : `₹${Number(order.deliveryFee).toFixed(2)}`}</p>
                                                     <p><strong>Total:</strong> ₹{Number(order.totalAmount || 0).toLocaleString('en-IN')}</p>
                                                     <p><strong>Payment:</strong> {order.paymentStatus || (order.paymentId ? 'Paid' : 'Unpaid')}</p>
                                                     <label>

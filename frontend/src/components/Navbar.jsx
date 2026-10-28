@@ -19,7 +19,7 @@ const Navbar = () => {
             <div className="navbar-brand">
                 <img src="/logoo.png" alt="Gauri Godse Homemade Diwali Faral" />
                 <span className="navbar-brand-copy">
-                    <span className="navbar-title">Homemade Diwali Faral</span>
+                    <span className="navbar-title">Gauri's Kitchen</span>
                     <span className="navbar-subtitle">By Gauri Godse</span>
                 </span>
             </div>

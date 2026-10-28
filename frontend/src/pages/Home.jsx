@@ -65,6 +65,10 @@ const Home = () => {
                         <span>Traditional recipes</span>
                         <span>Made with care</span>
                     </div>
+                    <p className="phone-order-note">
+                        On-call orders accepted: <a href="tel:9860257564">9860257564</a>
+                    </p>
+                    <p className="availability-note">Currently available only in Ahilyanagar City</p>
                     <Link to="/shop" className="shop-link">Shop Faral</Link>
                 </div>
             </section>

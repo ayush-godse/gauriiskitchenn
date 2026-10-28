@@ -6,6 +6,8 @@ import { clearCart } from '../redux/cartSlice';
 import { apiUrl } from '../api';
 
 const DELIVERY_CITY = 'Ahilyanagar City';
+const FREE_DELIVERY_THRESHOLD = 1000;
+const DELIVERY_FEE = 50;
 const getEstimatedDeliveryDate = () => {
     const date = new Date();
     date.setDate(date.getDate() + 4);
@@ -20,6 +22,7 @@ const Checkout = () => {
     const [address, setAddress] = useState({
         fullName: user?.name || '',
         street: '',
+        area: '',
         phone: user?.phone || '',
     });
     const [loading, setLoading] = useState(false);
@@ -27,6 +30,8 @@ const Checkout = () => {
     const [addressNotice, setAddressNotice] = useState('');
     const addressEdited = useRef(false);
     const totalPrice = cartItem.reduce((total, item) => total + item.price * item.quantity, 0);
+    const deliveryFee = totalPrice >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE;
+    const totalToPay = totalPrice + deliveryFee;
     const items = cartItem.map((item) => ({
         product: item._id,
         quantity: item.quantity,
@@ -56,6 +61,7 @@ const Checkout = () => {
                     setAddress({
                         fullName: latestOrder.address.FullName,
                         street: latestOrder.address.Street,
+                        area: latestOrder.address.Area || '',
                         phone: latestOrder.address.phone,
                     });
                 }
@@ -128,6 +134,7 @@ const Checkout = () => {
                                 address: {
                                     FullName: address.fullName,
                                     Street: address.street,
+                                    Area: address.area,
                                     City: DELIVERY_CITY,
                                     phone: address.phone,
                                 },
@@ -195,6 +202,16 @@ const Checkout = () => {
                 />
                 <input
                     type="text"
+                    placeholder="Area (e.g. Savedi)"
+                    value={address.area}
+                    onChange={(event) => {
+                        addressEdited.current = true;
+                        setAddress({ ...address, area: event.target.value });
+                    }}
+                    required
+                />
+                <input
+                    type="text"
                     placeholder="City"
                     value={DELIVERY_CITY}
                     readOnly
@@ -214,7 +231,25 @@ const Checkout = () => {
                 />
                 <div className="checkout-summary">
                     <p>Estimated delivery: {getEstimatedDeliveryDate()} (within 4 days)</p>
-                    <h4>Total to Pay: ₹{totalPrice.toFixed(2)}</h4>
+                    <p className="delivery-promotion">Free delivery on orders of ₹{FREE_DELIVERY_THRESHOLD.toLocaleString('en-IN')} or more!</p>
+                    {deliveryFee === 0 ? (
+                        <p className="free-delivery-unlocked" role="status" aria-live="polite">
+                            Free delivery unlocked!
+                        </p>
+                    ) : (
+                        <p className="delivery-progress">
+                            Add products worth ₹{(FREE_DELIVERY_THRESHOLD - totalPrice).toFixed(2)} more to unlock free delivery!
+                        </p>
+                    )}
+                    <div className="checkout-price-row">
+                        <span>Items subtotal</span>
+                        <span>₹{totalPrice.toFixed(2)}</span>
+                    </div>
+                    <div className="checkout-price-row">
+                        <span>Delivery</span>
+                        <span>{deliveryFee === 0 ? 'FREE' : `₹${deliveryFee.toFixed(2)}`}</span>
+                    </div>
+                    <h4>Total to Pay: ₹{totalToPay.toFixed(2)}</h4>
                     {addressNotice && <p role="status">{addressNotice}</p>}
                     {error && <p role="alert">{error}</p>}
                     <button type="submit" className="btn" disabled={loading}>
