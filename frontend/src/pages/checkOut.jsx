@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { clearCart } from '../redux/cartSlice';
 import { apiUrl } from '../api';
@@ -20,6 +20,7 @@ const Checkout = () => {
     const navigate = useNavigate();
     const [address, setAddress] = useState({
         fullName: user?.name || '',
+        email: user?.email || '',
         street: '',
         area: '',
         phone: user?.phone || '',
@@ -59,6 +60,7 @@ const Checkout = () => {
                 if (latestOrder && !addressEdited.current) {
                     setAddress({
                         fullName: latestOrder.address.FullName,
+                        email: latestOrder.address.email || user?.email || '',
                         street: latestOrder.address.Street,
                         area: latestOrder.address.Area || '',
                         phone: latestOrder.address.phone,
@@ -74,14 +76,10 @@ const Checkout = () => {
 
         loadSavedAddress();
         return () => controller.abort();
-    }, [user?.token]);
+    }, [user?.token, user?.email]);
 
     const handlePayment = async (event) => {
         event.preventDefault();
-        if (!user?.token) {
-            navigate('/register', { state: { from: '/checkout' } });
-            return;
-        }
         if (!window.Razorpay) {
             setError('Razorpay Checkout did not load. Refresh the page and try again.');
             return;
@@ -90,12 +88,13 @@ const Checkout = () => {
         setLoading(true);
         setError('');
         try {
+            const headers = { 'Content-Type': 'application/json' };
+            if (user?.token) {
+                headers.Authorization = `Bearer ${user.token}`;
+            }
             const orderResponse = await fetch(apiUrl('/api/payments/create-order'), {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${user.token}`,
-                },
+                headers,
                 body: JSON.stringify({ items }),
             });
             const orderData = await orderResponse.json();
@@ -112,7 +111,7 @@ const Checkout = () => {
                 order_id: orderData.id,
                 prefill: {
                     name: address.fullName,
-                    email: user.email,
+                    email: address.email,
                     contact: address.phone,
                 },
                 theme: { color: '#f97316' },
@@ -123,15 +122,13 @@ const Checkout = () => {
                     try {
                         const verifyResponse = await fetch(apiUrl('/api/payments/verify-payment'), {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                Authorization: `Bearer ${user.token}`,
-                            },
+                            headers,
                             body: JSON.stringify({
                                 ...paymentResponse,
                                 items,
                                 address: {
                                     FullName: address.fullName,
+                                    email: address.email,
                                     Street: address.street,
                                     Area: address.area,
                                     City: DELIVERY_CITY,
@@ -170,10 +167,6 @@ const Checkout = () => {
         );
     }
 
-    if (!user?.token) {
-        return <Navigate to="/register" replace state={{ from: '/checkout' }} />;
-    }
-
     return (
         <div className="checkout-container">
             <h2>Checkout</h2>
@@ -187,6 +180,17 @@ const Checkout = () => {
                         addressEdited.current = true;
                         setAddress({ ...address, fullName: event.target.value });
                     }}
+                    required
+                />
+                <input
+                    type="email"
+                    placeholder="Email address for your order bill"
+                    value={address.email}
+                    onChange={(event) => {
+                        addressEdited.current = true;
+                        setAddress({ ...address, email: event.target.value });
+                    }}
+                    autoComplete="email"
                     required
                 />
                 <input

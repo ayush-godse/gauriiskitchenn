@@ -167,7 +167,7 @@ const createOrder = async (req, res) => {
       currency: "INR",
       receipt: crypto.randomBytes(10).toString("hex"),
       notes: {
-        userId: String(req.user._id),
+        ...(req.user ? { userId: String(req.user._id) } : {}),
         cartHash,
       },
     });
@@ -184,6 +184,20 @@ const verifyPayment = async (req, res) => {
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return res.status(400).json({ message: "Payment verification details are incomplete." });
     }
+    if (
+      !req.body.address?.FullName ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(req.body.address?.email || "") ||
+      !req.body.address?.Street ||
+      !req.body.address?.Area ||
+      !req.body.address?.City ||
+      !/^[0-9]{10}$/.test(req.body.address?.phone || "")
+    ) {
+      return res.status(400).json({ message: "Enter your name, a valid email address, street, area, city, and a valid 10-digit phone number." });
+    }
+    const receiptCustomer = {
+      name: req.body.address.FullName,
+      email: req.body.address.email.trim().toLowerCase(),
+    };
 
     const { client } = getRazorpayClient();
     const { orderProducts, amountInPaise, cartHash, receiptItems, deliveryFee } = await getCartDetails(req.body.items);
@@ -202,8 +216,11 @@ const verifyPayment = async (req, res) => {
     ) {
       return res.status(400).json({ message: "Payment signature is invalid." });
     }
+    const userMatches = req.user
+      ? order.notes?.userId === String(req.user._id)
+      : !order.notes?.userId;
     if (
-      order.notes?.userId !== String(req.user._id) ||
+      !userMatches ||
       order.notes?.cartHash !== cartHash ||
       order.amount !== amountInPaise ||
       order.currency !== "INR" ||
@@ -224,13 +241,9 @@ const verifyPayment = async (req, res) => {
         return res.status(409).json({ message: "Payment has not been captured." });
       }
     }
-    if (!req.body.address?.FullName || !req.body.address?.Street || !req.body.address?.Area || !req.body.address?.City || !/^[0-9]{10}$/.test(req.body.address?.phone || "")) {
-      return res.status(400).json({ message: "Enter your full name, street address, area, city, and a valid 10-digit phone number." });
-    }
-
     const existingOrder = await Order.findOne({ paymentId: razorpay_payment_id });
     if (existingOrder) {
-      const receiptSent = await sendReceiptIfNeeded(existingOrder, req.user, receiptItems);
+      const receiptSent = await sendReceiptIfNeeded(existingOrder, receiptCustomer, receiptItems);
       return res.json({
         message: "Payment verified and order saved.",
         receiptEmailSent: receiptSent,
@@ -242,11 +255,11 @@ const verifyPayment = async (req, res) => {
     let savedOrder;
     try {
       savedOrder = await Order.create({
-        user: req.user._id,
+        ...(req.user ? { user: req.user._id } : {}),
         products: orderProducts,
         totalAmount: amountInPaise / 100,
         deliveryFee,
-        address: req.body.address,
+        address: { ...req.body.address, email: receiptCustomer.email },
         paymentId: razorpay_payment_id,
         paymentStatus: "Paid",
       });
@@ -254,7 +267,7 @@ const verifyPayment = async (req, res) => {
       await restoreStock(reservedStock);
       const duplicateOrder = await Order.findOne({ paymentId: razorpay_payment_id });
       if (duplicateOrder) {
-        const receiptSent = await sendReceiptIfNeeded(duplicateOrder, req.user, receiptItems);
+        const receiptSent = await sendReceiptIfNeeded(duplicateOrder, receiptCustomer, receiptItems);
         return res.json({
           message: "Payment verified and order saved.",
           receiptEmailSent: receiptSent,
@@ -263,7 +276,7 @@ const verifyPayment = async (req, res) => {
       }
       throw error;
     }
-    const receiptEmailSent = await sendReceiptIfNeeded(savedOrder, req.user, receiptItems);
+    const receiptEmailSent = await sendReceiptIfNeeded(savedOrder, receiptCustomer, receiptItems);
     res.json({ message: "Payment verified and order saved.", receiptEmailSent, order: savedOrder });
   } catch (error) {
     console.error("Razorpay payment verification failed:", error.message);

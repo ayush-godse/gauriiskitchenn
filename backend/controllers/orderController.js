@@ -52,7 +52,9 @@ const updateOrder = async (req, res) => {
     }
     order.status = req.body.status;
     await order.save();
-    await sendEmail(order.user.email, "Order Status Updated", `Your order status has been updated to ${order.status}.`);
+    if (order.user?.email) {
+      await sendEmail(order.user.email, "Order Status Updated", `Your order status has been updated to ${order.status}.`);
+    }
     res.json(order);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -92,7 +94,9 @@ const deleteOrder = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
     await order.deleteOne();
-    await sendEmail(order.user.email, "Order Deleted", "Your order has been deleted.");
+    if (order.user?.email) {
+      await sendEmail(order.user.email, "Order Deleted", "Your order has been deleted.");
+    }
     res.json({ message: "Order deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });

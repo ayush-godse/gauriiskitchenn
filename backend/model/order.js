@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const orderSchema = new mongoose.Schema({
-    user: {type: mongoose.Schema.Types.ObjectId,ref : "User",required: true},
+    user: {type: mongoose.Schema.Types.ObjectId,ref : "User"},
     products: [
         {
             product: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
@@ -13,6 +13,7 @@ const orderSchema = new mongoose.Schema({
     deliveryFee: { type: Number, default: 0 },
     address: { 
         FullName: { type: String, required: true },
+        email: { type: String, lowercase: true, trim: true },
         Street: { type: String, required: true },
         Area: { type: String, required: true },
         City: { type: String, required: true },

@@ -102,6 +102,7 @@ const AdminOrders = () => {
                                             <td colSpan={3}>
                                                 <div className="admin-order-details">
                                                     <p><strong>Customer name:</strong> {order.user?.name || order.address?.FullName || 'N/A'}</p>
+                                                    <p><strong>Customer email:</strong> {order.address?.email || order.user?.email || 'N/A'}</p>
                                                     <p><strong>Customer phone number:</strong> {order.user?.phone || 'N/A'}</p>
                                                     <p><strong>Receiver's number:</strong> {order.address?.phone || 'N/A'}</p>
                                                     <p><strong>Delivery address:</strong> {[order.address?.Street, order.address?.Area, order.address?.City].filter(Boolean).join(', ') || 'N/A'}</p>
