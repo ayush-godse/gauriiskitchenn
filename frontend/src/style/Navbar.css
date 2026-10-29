@@ -51,6 +51,27 @@
   line-height: 1.2;
 }
 
+.navbar-brand-phone {
+  width: fit-content;
+  color: var(--gold);
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.navbar-brand-phone:hover {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.navbar-brand-phone:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
 .navbar-links {
   display: flex;
   align-items: center;
@@ -149,6 +170,10 @@
 
   .navbar-subtitle {
     font-size: 0.66rem;
+  }
+
+  .navbar-brand-phone {
+    font-size: 0.7rem;
   }
 
   .navbar-links {

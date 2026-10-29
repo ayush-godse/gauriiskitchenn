@@ -21,6 +21,7 @@ const Navbar = () => {
                 <span className="navbar-brand-copy">
                     <span className="navbar-title">Gauri's Kitchen</span>
                     <span className="navbar-subtitle">By Gauri Godse</span>
+                    <a className="navbar-brand-phone" href="tel:9860257564">9860257564</a>
                 </span>
             </div>
 

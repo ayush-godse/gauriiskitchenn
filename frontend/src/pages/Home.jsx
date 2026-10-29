@@ -66,6 +66,7 @@ const Home = () => {
                         <span>Freshly prepared</span>
                         <span>Traditional recipes</span>
                         <span>Made with care</span>
+                        <span>Now you can buy online and offline</span>
                     </div>
                     <p className="phone-order-note">
                         On-call orders accepted: <a href="tel:9860257564">9860257564</a>

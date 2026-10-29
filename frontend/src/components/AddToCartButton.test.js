@@ -13,7 +13,7 @@ jest.mock("react-router-dom", () => ({
 
 const product = { _id: "faral", name: "Faral", price: 120, stock: 2000 };
 
-const renderAddToCartButton = () => {
+const renderAddToCartButton = (props = {}) => {
     const store = configureStore({
         reducer: { cart: cartReducer },
         preloadedState: { cart: { ownerId: "guest", cartItems: [] } },
@@ -21,7 +21,7 @@ const renderAddToCartButton = () => {
 
     render(
         <Provider store={store}>
-            <AddToCartButton product={product} />
+            <AddToCartButton product={product} {...props} />
         </Provider>
     );
 
@@ -43,5 +43,12 @@ describe("AddToCartButton", () => {
         expect(store.getState().cart.cartItems).toEqual([
             expect.objectContaining({ _id: "faral", price: 240, sizeGrams: 1000, quantity: 1 }),
         ]);
+    });
+
+    test("shows the call order contact when enabled", () => {
+        renderAddToCartButton({ showCallOrder: true });
+
+        expect(screen.getByText(/On call order accepted:/i)).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "9860257564" })).toHaveAttribute("href", "tel:9860257564");
     });
 });

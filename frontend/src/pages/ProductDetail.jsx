@@ -81,7 +81,7 @@ const ProductDetails = () => {
             <p className="product-delivery-estimate">
                 Estimated delivery: {getEstimatedDeliveryDate()}
             </p>
-            <AddToCartButton product={product} />
+            <AddToCartButton product={product} showCallOrder />
         </div>
     );
 };

@@ -7,7 +7,8 @@ const Footer = () => (
             <div className="footer-brand">
                 <h2>Gauri Godse</h2>
                 <p>Authentic Homemade Diwali Faral</p>
-                <p className="footer-address">Adress-plot no:32 Ashok nagar bhingardive mala gulmohar road Savedi, Ahilyanagar, Maharashtra</p>
+                <p className="footer-address">Address-plot no:32 Ashok nagar bhingardive mala gulmohar road Savedi, Ahilyanagar, Maharashtra</p>
+                <p className="footer-contact">Phone: <a href="tel:9860257564">9860257564</a></p>
             </div>
             <ul className="footer-links">
                 <li><Link to="/privacy">Privacy Policy</Link></li>

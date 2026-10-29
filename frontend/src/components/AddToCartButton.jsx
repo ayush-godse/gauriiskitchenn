@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { addToCart } from "../redux/cartSlice";
 
-const AddToCartButton = ({ product, className = "" }) => {
+const AddToCartButton = ({ product, className = "", showCallOrder = false }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const packSizeGroupId = useId();
@@ -72,14 +72,31 @@ const AddToCartButton = ({ product, className = "" }) => {
                         ? "Stock limit reached"
                         : `Add ${sizeGrams === 500 ? "500 g" : "1 kg"} to Cart`}
             </button>
-            <button
-                className="product-buy-now-btn"
-                type="button"
-                onClick={handleBuyNow}
-                disabled={outOfStock || stockLimitReached}
-            >
-                Buy Now
-            </button>
+            {showCallOrder ? (
+                <div className="product-purchase-actions">
+                    <button
+                        className="product-buy-now-btn"
+                        type="button"
+                        onClick={handleBuyNow}
+                        disabled={outOfStock || stockLimitReached}
+                    >
+                        Buy Now
+                    </button>
+                    <div className="product-call-order">
+                        <span>On call order accepted</span>
+                        <a href="tel:9860257564">9860257564</a>
+                    </div>
+                </div>
+            ) : (
+                <button
+                    className="product-buy-now-btn"
+                    type="button"
+                    onClick={handleBuyNow}
+                    disabled={outOfStock || stockLimitReached}
+                >
+                    Buy Now
+                </button>
+            )}
             {addedToCart && <span className="add-to-cart-status" role="status">Added to cart ✓</span>}
         </>
     );
