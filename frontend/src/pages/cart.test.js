@@ -2,17 +2,14 @@ import React from "react";
 import { configureStore } from "@reduxjs/toolkit";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
-import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import cartReducer from "../redux/cartSlice";
 import Cart from "./cart";
 
-const RegistrationDestination = () => {
-    const location = useLocation();
-    return <p>Register page: {location.state?.from}</p>;
-};
+const ShippingDestination = () => <p>Shipping Address</p>;
 
 describe("Cart", () => {
-    test("Continue opens registration with checkout as the return destination", () => {
+    test("Continue opens the shipping address page directly", () => {
         const store = configureStore({
             reducer: { cart: cartReducer },
             preloadedState: {
@@ -28,7 +25,7 @@ describe("Cart", () => {
                 <MemoryRouter initialEntries={["/cart"]}>
                     <Routes>
                         <Route path="/cart" element={<Cart />} />
-                        <Route path="/register" element={<RegistrationDestination />} />
+                        <Route path="/checkout" element={<ShippingDestination />} />
                     </Routes>
                 </MemoryRouter>
             </Provider>
@@ -36,6 +33,6 @@ describe("Cart", () => {
 
         fireEvent.click(screen.getByRole("link", { name: "Continue" }));
 
-        expect(screen.getByText("Register page: /checkout")).toBeInTheDocument();
+        expect(screen.getByText("Shipping Address")).toBeInTheDocument();
     });
 });
