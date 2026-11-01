@@ -39,7 +39,7 @@ describe("AddToCartButton", () => {
         fireEvent.click(oneKilogramOption);
         fireEvent.click(screen.getByRole("button", { name: "Buy Now" }));
 
-        expect(mockNavigate).toHaveBeenCalledWith("/checkout");
+        expect(mockNavigate).toHaveBeenCalledWith("/register", { state: { from: "/checkout" } });
         expect(store.getState().cart.cartItems).toEqual([
             expect.objectContaining({ _id: "faral", price: 240, sizeGrams: 1000, quantity: 1 }),
         ]);

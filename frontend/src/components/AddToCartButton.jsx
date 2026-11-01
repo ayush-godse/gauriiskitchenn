@@ -33,7 +33,7 @@ const AddToCartButton = ({ product, className = "", showCallOrder = false }) => 
     const handleBuyNow = () => {
         if (outOfStock || stockLimitReached) return;
         dispatch(addToCart({ ...product, price: selectedPrice, sizeGrams }));
-        navigate("/checkout");
+        navigate("/register", { state: { from: "/checkout" } });
     };
 
     return (

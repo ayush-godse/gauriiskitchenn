@@ -59,7 +59,7 @@ const Cart = () => {
                         ))}
                     </ul>
                     <p className="cart-total"><strong>Total</strong><strong>₹{total.toFixed(2)}</strong></p>
-                    <Link to="/checkout" className="shop-link">Continue</Link>
+                    <Link to="/register" state={{ from: "/checkout" }} className="shop-link">Continue</Link>
                 </>
             )}
         </section>
