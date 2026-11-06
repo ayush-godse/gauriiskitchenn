@@ -6,7 +6,7 @@ import ProductGalleryModal from "../components/ProductGalleryModal";
 import { apiUrl } from "../api";
 
 const getEstimatedDeliveryDate = () => {
-    const date = new Date(2026, 10, 5);
+    const date = new Date(2026, 10, 9);
     return date.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
 };
 

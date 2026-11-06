@@ -9,7 +9,7 @@ const DELIVERY_CITY = 'Ahilyanagar City';
 const FREE_DELIVERY_THRESHOLD = 1000;
 const DELIVERY_FEE = 50;
 const getEstimatedDeliveryDate = () => {
-    const date = new Date(2026, 10, 5);
+    const date = new Date(2026, 10, 9);
     return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
 };
 
