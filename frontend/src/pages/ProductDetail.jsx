@@ -4,12 +4,8 @@ import ProductImage from "../components/ProductImage";
 import AddToCartButton from "../components/AddToCartButton";
 import ProductLoading from "../components/ProductLoading";
 import { apiUrl } from "../api";
+import { getEstimatedDeliveryDate } from "../utils/deliveryDate";
 import "../style/product.css";
-
-const getEstimatedDeliveryDate = () => {
-    const date = new Date(2026, 10, 9);
-    return date.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
-};
 
 const ProductDetails = () => {
     const { id } = useParams();

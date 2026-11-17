@@ -118,7 +118,7 @@ const Login = () => {
                 <button type="submit" disabled={!otpSent && cooldown > 0}>
                     {otpSent ? "Verify and sign in" : cooldown > 0 ? `Try again in ${cooldown}s` : "Email me a sign-in code"}
                 </button>
-                {!otpSent && <p>New here? <Link to="/register" state={{ from: returnTo }}>Create an account</Link></p>}
+                {!otpSent && <p>If you are new, <Link to="/register" state={{ from: returnTo }}>register</Link>.</p>}
                 {otpSent && (
                     <button type="button" onClick={handleResendOtp} disabled={cooldown > 0}>
                         {cooldown > 0 ? `Resend code in ${cooldown}s` : "Resend code"}

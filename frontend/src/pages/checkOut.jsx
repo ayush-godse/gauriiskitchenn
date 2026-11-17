@@ -1,17 +1,12 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { clearCart } from '../redux/cartSlice';
 import { apiUrl } from '../api';
+import { getEstimatedDeliveryDate } from '../utils/deliveryDate';
 
 const DELIVERY_CITY = 'Ahilyanagar City';
-const FREE_DELIVERY_THRESHOLD = 1000;
-const DELIVERY_FEE = 50;
-const getEstimatedDeliveryDate = () => {
-    const date = new Date(2026, 10, 9);
-    return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
-};
 
 const Checkout = () => {
     const { user } = useContext(AuthContext);
@@ -30,8 +25,7 @@ const Checkout = () => {
     const [addressNotice, setAddressNotice] = useState('');
     const addressEdited = useRef(false);
     const totalPrice = cartItem.reduce((total, item) => total + item.price * item.quantity, 0);
-    const deliveryFee = totalPrice >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE;
-    const totalToPay = totalPrice + deliveryFee;
+    const totalToPay = totalPrice;
     const items = cartItem.map((item) => ({
         product: item._id,
         quantity: item.quantity,
@@ -167,6 +161,10 @@ const Checkout = () => {
         );
     }
 
+    if (!user?.token) {
+        return <Navigate to="/login" state={{ from: '/checkout' }} replace />;
+    }
+
     return (
         <div className="checkout-container">
             <h2>Checkout</h2>
@@ -234,23 +232,13 @@ const Checkout = () => {
                 />
                 <div className="checkout-summary">
                     <p>Estimated delivery: {getEstimatedDeliveryDate()}</p>
-                    <p className="delivery-promotion">Free delivery on orders of ₹{FREE_DELIVERY_THRESHOLD.toLocaleString('en-IN')} or more!</p>
-                    {deliveryFee === 0 ? (
-                        <p className="free-delivery-unlocked" role="status" aria-live="polite">
-                            Free delivery unlocked!
-                        </p>
-                    ) : (
-                        <p className="delivery-progress">
-                            Add products worth ₹{(FREE_DELIVERY_THRESHOLD - totalPrice).toFixed(2)} more to unlock free delivery!
-                        </p>
-                    )}
                     <div className="checkout-price-row">
                         <span>Items subtotal</span>
                         <span>₹{totalPrice.toFixed(2)}</span>
                     </div>
                     <div className="checkout-price-row">
                         <span>Delivery</span>
-                        <span>{deliveryFee === 0 ? 'FREE' : `₹${deliveryFee.toFixed(2)}`}</span>
+                        <span>FREE</span>
                     </div>
                     <h4>Total to Pay: ₹{totalToPay.toFixed(2)}</h4>
                     {addressNotice && <p role="status">{addressNotice}</p>}

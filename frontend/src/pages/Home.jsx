@@ -4,11 +4,7 @@ import ProductCard from "../components/ProductCard";
 import ProductLoading from "../components/ProductLoading";
 import ProductGalleryModal from "../components/ProductGalleryModal";
 import { apiUrl } from "../api";
-
-const getEstimatedDeliveryDate = () => {
-    const date = new Date(2026, 10, 9);
-    return date.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
-};
+import { getEstimatedDeliveryDate } from "../utils/deliveryDate";
 
 const Home = () => {
     const location = useLocation();

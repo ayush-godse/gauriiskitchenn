@@ -5,9 +5,6 @@ const Order = require("../model/order");
 const Product = require("../model/product");
 const sendOrderReceipt = require("../utils/sendOrderReceipt");
 
-const FREE_DELIVERY_THRESHOLD = 1000;
-const DELIVERY_FEE = 50;
-
 const getRazorpayClient = () => {
   const keyId = process.env.RAZORPAY_KEY_ID;
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
@@ -97,7 +94,7 @@ const getCartDetails = async (items) => {
     (total, item) => total + item.price * item.quantity,
     0
   );
-  const deliveryFee = totalAmount >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE;
+  const deliveryFee = 0;
   const amountInPaise = Math.round((totalAmount + deliveryFee) * 100);
   if (!Number.isSafeInteger(amountInPaise) || amountInPaise < 100) {
     const error = new Error("The cart total must be at least ₹1.");

@@ -18,6 +18,7 @@ const Footer = () => (
         <p className="footer-copyright">&copy; 2026 Gauri Godse Faral. All rights reserved.</p>
         <p className="footer-credit">
             Website designed & developed by <strong>Ayush Godse</strong> ·{" "}
+          
             <a href="tel:9579160349">9579160349</a>
         </p>
     </footer>
